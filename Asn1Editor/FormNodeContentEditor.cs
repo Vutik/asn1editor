@@ -83,7 +83,7 @@ namespace LipingShare.Asn1Editor
             ed.enableTagEdit = enableTagEdit;
             ed.pureHexMode = pureHexMode;
             if (
-                ((aNode.Tag&Asn1Tag.TAG_MASK) == Asn1Tag.BIT_STRING) && 
+                ((aNode.TagClass&Asn1Tag.TAG_MASK) == Asn1Tag.BIT_STRING) && 
                 (aNode.ChildNodeCount<1))
             {
                 ed.panelUnusedBits.Visible = true;
@@ -104,7 +104,7 @@ namespace LipingShare.Asn1Editor
             else
             {
                 byte[] oidVal;
-                switch (aNode.Tag)
+                switch (aNode.TagClass)
                 {
                     case Asn1Tag.OBJECT_IDENTIFIER:
                         ed.checker = DataChecker.Oid;
@@ -172,7 +172,7 @@ namespace LipingShare.Asn1Editor
                         aNode.Data = data;
                         break;
                     default:
-                        if ((aNode.Tag & Asn1Tag.TAG_MASK) == 6) // Visible string for certificate
+                        if ((aNode.TagClass & Asn1Tag.TAG_MASK) == 6) // Visible string for certificate
                         {
                             ed.ShowDialog(parent);
                             if (!ed.isOK) return false;
@@ -379,7 +379,7 @@ namespace LipingShare.Asn1Editor
 
         private void FormNodeContentEditor_Load(object sender, System.EventArgs e)
         {
-            textBoxTag.Text = String.Format("{0:X2}",aNode.Tag);
+            textBoxTag.Text = String.Format("{0:X2}",aNode.TagClass);
             textBoxNodeContent.Text = aNode.GetDataStr(pureHexMode);
 			string msg = "";
 			msg = String.Format(  "Tag:{0} (0x{0:X2}) : {1} \r\n"  
@@ -387,13 +387,13 @@ namespace LipingShare.Asn1Editor
                                 + "Length:{3,4} (0x{3:X8})\r\n"
                                 + "Deepness: {4}\r\n"
                                 ,
-				                aNode.Tag, 
-				                Asn1Util.GetTagName(aNode.Tag), 
+				                aNode.TagClass, 
+				                Asn1Util.GetTagName(aNode.TagClass, aNode.TagNum), 
 				                aNode.DataOffset,
 				                aNode.DataLength,
                                 aNode.Deepness
                                 );
-            if ((aNode.Tag & Asn1Tag.TAG_MASK) == Asn1Tag.BIT_STRING)
+            if ((aNode.TagClass & Asn1Tag.TAG_MASK) == Asn1Tag.BIT_STRING)
             {
                 msg += "Unused Bits: " + aNode.UnusedBits.ToString() + "\r\n";
             }
@@ -478,7 +478,7 @@ namespace LipingShare.Asn1Editor
                     isOK = IsHexStr(textBoxTag.Text);
                     byte[] xb = Asn1Util.HexStrToBytes(textBoxTag.Text);
                     if (xb.Length>0)
-                        aNode.Tag = xb[0];
+                        aNode.TagClass = xb[0];
                 }
                 int unusedBits = Convert.ToInt16(textBoxUnusedBits.Text);
             }

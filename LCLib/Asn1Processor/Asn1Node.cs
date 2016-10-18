@@ -28,6 +28,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Diagnostics;
 using System.Text;
 
 namespace LipingShare.LCLib.Asn1Processor
@@ -129,8 +130,11 @@ namespace LipingShare.LCLib.Asn1Processor
         /// <summary>
         /// Get/Set tag value.
         /// </summary>
-        byte Tag{ get; set; }
-
+        byte TagClass{ get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        int TagNum { get; set; }
         /// <summary>
         /// Get tag name.
         /// </summary>
@@ -226,8 +230,11 @@ namespace LipingShare.LCLib.Asn1Processor
 	public class Asn1Node : IAsn1Node
 	{
 		// PrivateMembers
-		private byte tag;
-		private long dataOffset;
+		//private byte tag__;
+        private byte tag_class;
+        private int tag_num;
+       
+        private long dataOffset;
 		private long dataLength;
 		private long lengthFieldBytes;
 		private byte[] data;
@@ -266,7 +273,9 @@ namespace LipingShare.LCLib.Asn1Processor
 			dataLength = 0;
 			lengthFieldBytes = 0;
 			unusedBits = 0;
-			tag = Asn1Tag.SEQUENCE | Asn1TagClasses.CONSTRUCTED;
+		    tag_class = Asn1Tag.SEQUENCE | Asn1TagClasses.CONSTRUCTED;
+		    tag_num = 0;
+            //tag = Asn1Tag.SEQUENCE | Asn1TagClasses.CONSTRUCTED;
 			childNodeList.Clear();
 			deepness = 0;
 			parentNode = null;
@@ -359,10 +368,19 @@ namespace LipingShare.LCLib.Asn1Processor
 			dataOffset = 0;
 		}
 
-		/// <summary>
-		/// Get/Set isIndefiniteLength.
+        /// <summary>
+		/// Constructor, initialize all the members.
 		/// </summary>
-		public bool IsIndefiniteLength
+		public Asn1Node(long dataoffset)
+        {
+            Init();
+            dataOffset = dataoffset;
+        }
+
+        /// <summary>
+        /// Get/Set isIndefiniteLength.
+        /// </summary>
+        public bool IsIndefiniteLength
 		{
 			get
 			{
@@ -391,15 +409,27 @@ namespace LipingShare.LCLib.Asn1Processor
         /// <summary>
         /// Get/Set tag value.
         /// </summary>
-        public byte Tag
+        public byte TagClass
         { 
             get
             {
-                return tag;
+                return tag_class;
             }
             set
             {
-                tag = value;
+                tag_class = value;
+            }
+        }
+
+        public int TagNum
+        {
+            get
+            {
+                return tag_num;
+            }
+            set
+            {
+                tag_num = value;
             }
         }
 
@@ -503,9 +533,10 @@ namespace LipingShare.LCLib.Asn1Processor
         {
             bool retval = true;
             long nodeCount = ChildNodeCount;
-            xdata.WriteByte(tag);
+            Asn1Util.DerTagEncode(xdata, tag_class, tag_num);
+            // xdata.WriteByte(tag);
             int tmpLen = Asn1Util.DERLengthEncode(xdata, (ulong) dataLength);
-            if ((tag) == Asn1Tag.BIT_STRING)
+            if ((tag_class) == Asn1Tag.BIT_STRING)
             {
                 xdata.WriteByte(unusedBits);
             }
@@ -687,7 +718,7 @@ namespace LipingShare.LCLib.Asn1Processor
         {
             get
             {
-                return Asn1Util.GetTagName(tag);
+                return Asn1Util.GetTagName(tag_class, tag_num);
             }
         }
 
@@ -715,7 +746,7 @@ namespace LipingShare.LCLib.Asn1Processor
             string dataStr = "";
             const string lStr = "      |      |       | ";
             string oid, oidName;
-            switch (tag)
+            switch (tag_class)
             {
                 case Asn1Tag.BIT_STRING:
                     baseLine = 
@@ -795,7 +826,7 @@ namespace LipingShare.LCLib.Asn1Processor
                         GetIndentStr(startNode), 
                         TagName
                         );
-					if ( tag == Asn1Tag.UTF8_STRING )
+					if ( tag_class == Asn1Tag.UTF8_STRING )
 					{
 						UTF8Encoding unicode = new UTF8Encoding();
 						dataStr = unicode.GetString(data);
@@ -843,7 +874,7 @@ namespace LipingShare.LCLib.Asn1Processor
                     }
                     break;
                 default:
-                    if ((tag & Asn1Tag.TAG_MASK) == 6) // Visible string for certificate
+                    if ((tag_class & Asn1Tag.TAG_MASK) == 6) // Visible string for certificate
                     {
                         baseLine = 
                             String.Format("{0,6}|{1,6}|{2,7}|{3} {4} : ", 
@@ -915,10 +946,10 @@ namespace LipingShare.LCLib.Asn1Processor
             }
             else
             {
-                switch (tag)
+                switch (tag_class)
                 {
                     case Asn1Tag.BIT_STRING:
-                        dataStr = Asn1Util.FormatString(Asn1Util.ToHexString(data), lineLen, 2);
+                        dataStr = Asn1Util.ToHexString(data);
                         break;
                     case Asn1Tag.OBJECT_IDENTIFIER:
                         Oid xoid = new Oid();
@@ -944,17 +975,17 @@ namespace LipingShare.LCLib.Asn1Processor
 						dataStr = utf8.GetString(data);
 						break;
 					case Asn1Tag.INTEGER:
-                        dataStr = Asn1Util.FormatString(Asn1Util.ToHexString(data), lineLen, 2);
+                        dataStr = Asn1Util.ToHexString(data);
                         break;
                     default:
-                        if ((tag & Asn1Tag.TAG_MASK) == 6) // Visible string for certificate
-                        {
-                            dataStr = Asn1Util.BytesToString(data);
-                        }
-                        else
-                        {
-                            dataStr = Asn1Util.FormatString(Asn1Util.ToHexString(data), lineLen, 2);
-                        }
+                        //if ((tag_class & Asn1Tag.TAG_MASK) == 6) // Visible string for certificate
+                        //{
+                         //   dataStr = Asn1Util.BytesToString(data);
+                        //}
+                        //else
+                        //{
+                            dataStr = Asn1Util.ToHexString(data);
+                       // }
                         break;
                 };
             }
@@ -981,19 +1012,19 @@ namespace LipingShare.LCLib.Asn1Processor
             if ((mask & TagTextMask.USE_HEX_OFFSET) != 0)
             {
                 if ((mask & TagTextMask.SHOW_TAG_NUMBER) != 0)
-                    offsetStr = String.Format("(0x{0:X2},0x{1:X6},0x{2:X4})", tag, dataOffset, dataLength);
+                    offsetStr = String.Format("(0x{0:X2},0x{1:X6},0x{2:X4})", tag_class, dataOffset, dataLength);
                 else
                     offsetStr = String.Format("(0x{0:X6},0x{1:X4})", dataOffset, dataLength);
             }
             else
             {
                 if ((mask & TagTextMask.SHOW_TAG_NUMBER) != 0)
-                    offsetStr = String.Format("({0},{1},{2})", tag, dataOffset, dataLength);
+                    offsetStr = String.Format("({0},{1},{2})", tag_class, dataOffset, dataLength);
                 else
                     offsetStr = String.Format("({0},{1})", dataOffset, dataLength);
             }
             string oid, oidName;
-            switch (tag)
+            switch (tag_class)
             {
                 case Asn1Tag.BIT_STRING:
                     if ((mask & TagTextMask.SHOW_OFFSET) != 0)
@@ -1054,7 +1085,7 @@ namespace LipingShare.LCLib.Asn1Processor
                     nodeStr += " " + TagName;
                     if ((mask & TagTextMask.SHOW_DATA) != 0)
                     {
-						if ( tag == Asn1Tag.UTF8_STRING )
+						if ( tag_class == Asn1Tag.UTF8_STRING )
 						{
 							UTF8Encoding unicode = new UTF8Encoding();
 							dataStr = unicode.GetString(data);
@@ -1093,14 +1124,14 @@ namespace LipingShare.LCLib.Asn1Processor
                     nodeStr += " " + TagName;
                     if ((mask & TagTextMask.SHOW_DATA) != 0)
                     {
-                        if ((tag & Asn1Tag.TAG_MASK) == 6) // Visible string for certificate
-                        {
-                            dataStr = Asn1Util.BytesToString(data);
-                        }
-                        else
-                        {
+                        //if ((tag_class & Asn1Tag.TAG_MASK) == 6) // Visible string for certificate
+                        //{
+                         //   dataStr = Asn1Util.BytesToString(data);
+                        //}
+                        //else
+                        //{
                             dataStr = Asn1Util.ToHexString(data);
-                        }
+                        //}
                         nodeStr += ((dataStr.Length>0) ? " : '" + dataStr + "'" : "");
                     }
                     break;
@@ -1251,7 +1282,7 @@ namespace LipingShare.LCLib.Asn1Processor
 			for (int i = 0; i<startNode.ChildNodeCount; i++)
 			{
 				Asn1Node childNode = startNode.GetChildNode(i);
-				int tmpTag = childNode.tag & Asn1Tag.TAG_MASK;
+				int tmpTag = childNode.tag_class & Asn1Tag.TAG_MASK;
 				if (tmpTag == Asn1Tag.OBJECT_IDENTIFIER)
 				{
 					if (oid == xoid.Decode(childNode.Data))
@@ -1269,7 +1300,7 @@ namespace LipingShare.LCLib.Asn1Processor
         /// <summary>
         /// Constant of tag field length.
         /// </summary>
-        public const int TagLength = 1;
+        public int TagLength = 1;
 
         /// <summary>
         /// Constant of unused bits field length.
@@ -1337,8 +1368,9 @@ namespace LipingShare.LCLib.Asn1Processor
             {
                 rootNode = rootNode.ParentNode;
             }
+            rootNode.path = rootNode.TagNum.ToString();
             ResetBranchDataLength(rootNode);
-            rootNode.dataOffset = 0;
+            //rootNode.dataOffset = 0;
             rootNode.deepness = 0;
             long subOffset = rootNode.dataOffset + TagLength + rootNode.lengthFieldBytes;
             ResetChildNodePar(rootNode, subOffset);
@@ -1366,10 +1398,10 @@ namespace LipingShare.LCLib.Asn1Processor
                 }
             }
             node.dataLength = childDataLength;
-            if (node.tag == Asn1Tag.BIT_STRING)
+            if (node.tag_class == Asn1Tag.BIT_STRING)
                 node.dataLength += BitStringUnusedFiledLength;
             ResetDataLengthFieldWidth(node);
-            retval = node.dataLength + TagLength + node.lengthFieldBytes;
+            retval = node.dataLength + node.TagLength + node.lengthFieldBytes;
             return retval;
         }
 
@@ -1394,7 +1426,8 @@ namespace LipingShare.LCLib.Asn1Processor
         protected void ResetChildNodePar(Asn1Node xNode, long subOffset)
         {
             int i;
-            if (xNode.tag == Asn1Tag.BIT_STRING)
+            
+            if (xNode.tag_class == Asn1Tag.BIT_STRING)
             {
                 subOffset++;
             }
@@ -1405,8 +1438,8 @@ namespace LipingShare.LCLib.Asn1Processor
                 tempNode.parentNode = xNode;
                 tempNode.dataOffset = subOffset;
                 tempNode.deepness = xNode.deepness + 1;
-                tempNode.path = xNode.path + '/' + i.ToString();
-                subOffset += TagLength + tempNode.lengthFieldBytes;
+                tempNode.path = xNode.path + '.' + tempNode.TagNum.ToString();
+                subOffset += tempNode.TagLength + tempNode.lengthFieldBytes;
                 ResetChildNodePar(tempNode, subOffset);
                 subOffset += tempNode.dataLength;
             }
@@ -1461,7 +1494,11 @@ namespace LipingShare.LCLib.Asn1Processor
             bool retval = false;
             long nodeMaxLen;
             nodeMaxLen = xdata.Length - xdata.Position;
-            tag = (byte) xdata.ReadByte();
+            //tag = (byte) xdata.ReadByte();
+            bool isBigTag = false;
+            var curPosition = xdata.Position;
+            Asn1Util.DerTagDecode(xdata,ref isBigTag, ref tag_class, ref tag_num);
+            TagLength = (int)(xdata.Position - curPosition);
             long start, end;
             start = xdata.Position;
             dataLength = Asn1Util.DerLengthDecode(xdata, ref isIndefiniteLength);
@@ -1472,11 +1509,11 @@ namespace LipingShare.LCLib.Asn1Processor
             {
                 return retval;
             }
-            if ( ParentNode == null || ((ParentNode.tag & Asn1TagClasses.CONSTRUCTED) == 0))
+            if ( ParentNode == null || ((ParentNode.tag_class & Asn1TagClasses.CONSTRUCTED) == 0))
             {
-                if ((tag & Asn1Tag.TAG_MASK)<=0 || (tag & Asn1Tag.TAG_MASK)>0x1E) return retval;
+                if ((tag_class & Asn1Tag.TAG_MASK)<=0 || (tag_class & Asn1Tag.TAG_MASK)>0x1E) return retval;
             }
-            if (tag == Asn1Tag.BIT_STRING)
+            if (tag_class == Asn1Tag.BIT_STRING)
             {
                 // First byte of BIT_STRING is unused bits.
                 // BIT_STRING data does not include this byte.
@@ -1510,7 +1547,11 @@ namespace LipingShare.LCLib.Asn1Processor
             try
             {
                 childNodeMaxLen = xdata.Length - xdata.Position;
-                tag = (byte) xdata.ReadByte();
+                //tag = (byte) xdata.ReadByte();
+                bool isBigTag = false;
+                var curPosition = xdata.Position;
+                Asn1Util.DerTagDecode(xdata, ref isBigTag, ref tag_class, ref tag_num);
+                TagLength = (int)(xdata.Position - curPosition);
                 long start, end, offset;
                 start = xdata.Position;
                 dataLength = Asn1Util.DerLengthDecode(xdata, ref isIndefiniteLength);
@@ -1523,7 +1564,7 @@ namespace LipingShare.LCLib.Asn1Processor
                 offset = dataOffset + TagLength + lengthFieldBytes;
                 Stream secData;
                 byte[] secByte;
-                if (tag == Asn1Tag.BIT_STRING)
+                if (tag_class == Asn1Tag.BIT_STRING)
                 {
                     // First byte of BIT_STRING is unused bits.
                     // BIT_STRING data does not include this byte.
@@ -1535,7 +1576,7 @@ namespace LipingShare.LCLib.Asn1Processor
                 secData = new MemoryStream((int)dataLength);
                 secByte = new byte[dataLength];
                 xdata.Read(secByte, 0, (int) (dataLength));
-                if (tag == Asn1Tag.BIT_STRING) dataLength++;
+                if (tag_class == Asn1Tag.BIT_STRING) dataLength++;
                 secData.Write(secByte, 0, secByte.Length);
                 secData.Position = 0;
                 while(secData.Position<secData.Length)
@@ -1591,9 +1632,14 @@ namespace LipingShare.LCLib.Asn1Processor
         {
             bool retval = true;
             ClearAll();
-            byte xtag; 
+            byte xtag = 0;
+            int xtag_num = 0; 
             long curPosition = xdata.Position;
-            xtag = (byte) xdata.ReadByte();
+            //xtag = (byte) xdata.ReadByte();
+            bool isBigTag = false;
+            Asn1Util.DerTagDecode(xdata, ref isBigTag, ref xtag, ref xtag_num);
+            Debug.WriteLine("Tag {0:X} num {1}", xtag, xtag_num);
+            TagLength = (int)(xdata.Position - curPosition);
             xdata.Position = curPosition;
             int maskedTag = xtag & Asn1Tag.TAG_MASK;
             if (((xtag & Asn1TagClasses.CONSTRUCTED) != 0) 
@@ -1625,7 +1671,10 @@ namespace LipingShare.LCLib.Asn1Processor
             }
             else
             {
-                if (!GeneralDecode(xdata)) retval = false;
+                if (!GeneralDecode(xdata))
+                {
+                    retval = false;
+                }
             }
             return retval;
         }
@@ -1646,7 +1695,7 @@ namespace LipingShare.LCLib.Asn1Processor
 				byte[] tmpData = Data;
 				parseEncapsulatedData = value;
 				ClearAll();
-				if ((tag & Asn1TagClasses.CONSTRUCTED) != 0 || parseEncapsulatedData)
+				if ((tag_class & Asn1TagClasses.CONSTRUCTED) != 0 || parseEncapsulatedData)
 				{
 					MemoryStream ms = new MemoryStream(tmpData);
 					ms.Position = 0;
@@ -1675,7 +1724,32 @@ namespace LipingShare.LCLib.Asn1Processor
 			}
 		}
 
-    }
+        public string GetLabel(uint mask, AsnPathAliasDictionary dict)
+        {
+            string str = this.GetLabel(mask);
+
+            if (dict == null )
+                return str;
+            AsnPathAlias alias = null;
+            if (dict.find(this.Path, out alias))
+            {
+                if (alias == null)
+                    return str;
+                this.Alias = alias;
+                string new_val = alias.ConvertValue(this.GetDataStr(false));
+                string old_label = str;
+                str = alias.Name;
+                if (!new_val.Equals(this.GetDataStr(false)))
+                {
+                    str += ":" + new_val;
+                }
+                str += old_label;
+            }
+            return str;
+        }
+
+        public AsnPathAlias Alias { get; set; }
+	}
 
 }
 

@@ -42,7 +42,7 @@ namespace LipingShare.Asn1Editor
         private System.Windows.Forms.Panel panel1;
         public System.Windows.Forms.RichTextBox richTextBox;
         private System.ComponentModel.IContainer components;
-        private Asn1Node rootNode;
+        private Asn1Node[] rootNodes;
         private Asn1Node selectedNode;
         private bool connected = false;
         public System.Windows.Forms.Form parentForm;
@@ -354,7 +354,7 @@ namespace LipingShare.Asn1Editor
             try
             {
                 richTextBox.Visible = false;
-                RootNode = rootNode;
+                RootNodes = rootNodes;
                 richTextBox.Visible = false;
                 SelectedNode = selectedNode;
             }
@@ -364,22 +364,25 @@ namespace LipingShare.Asn1Editor
             }
         }
 
-        public Asn1Node RootNode
+        public Asn1Node[] RootNodes
         {
             get
             {
-                return rootNode;
+                return rootNodes;
             }
             set
             {
-                rootNode = value;
-                if (rootNode == null)
+                rootNodes = value;
+                if (rootNodes == null)
                 {
                     richTextBox.Text = "";
                     return;
                 }
                 MemoryStream ms = new MemoryStream();
-                rootNode.SaveData(ms);
+                foreach (var rootNode in rootNodes)
+                {
+                    rootNode.SaveData(ms);
+                }
                 ms.Position = 0;
                 Byte[] data = new byte[ms.Length];
                 ms.Read(data, 0, data.Length);
@@ -417,9 +420,11 @@ namespace LipingShare.Asn1Editor
                 {
                     int tagOff = offset*3;
                     tagOff += tagOff/48;
-                    SetColor(tagOff, 2, this.cTag);
+                    int tagLen = (int)selectedNode.TagLength * 3;
+                    tagLen += tagLen / 48;
+                    SetColor(tagOff, tagLen, this.cTag);
 
-                    int lenOff = tagOff + 3;
+                    int lenOff = tagOff + tagLen;
                     int lenLen = (int) selectedNode.LengthFieldBytes * 3;
                     SetColor(lenOff, lenLen, this.cLen);
 
@@ -433,9 +438,9 @@ namespace LipingShare.Asn1Editor
                 else
                 {
                     int tagOff = offset;
-                    int lenOff = tagOff + 1;
+                    int lenOff = tagOff + selectedNode.TagLength;
                     int dataOff = lenOff + (int)selectedNode.LengthFieldBytes;
-                    SetBytesColor(this.cTag, tagOff, 1);
+                    SetBytesColor(this.cTag, tagOff, selectedNode.TagLength);
                     SetBytesColor(this.cLen, lenOff, (int)selectedNode.LengthFieldBytes);
                     try
                     {
@@ -443,7 +448,7 @@ namespace LipingShare.Asn1Editor
                         {
                             richTextBox.Visible = false;
                         }
-                        if (selectedNode.Tag == Asn1Tag.BIT_STRING)
+                        if (selectedNode.TagClass == Asn1Tag.BIT_STRING)
                             SetBytesColor(this.cData, dataOff, (int)selectedNode.DataLength);
                         else
                             SetBytesColor(this.cData, dataOff, (int)selectedNode.DataLength);

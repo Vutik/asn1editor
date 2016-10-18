@@ -25,6 +25,7 @@
 //+-------------------------------------------------------------------------------+
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace LipingShare.LCLib.Asn1Processor
@@ -37,7 +38,7 @@ namespace LipingShare.LCLib.Asn1Processor
 	public class Asn1Parser
 	{
         private byte[] rawData;
-        private Asn1Node rootNode = new Asn1Node();
+        private List<Asn1Node> rootNodes = new List<Asn1Node>();
 
 		/// <summary>
 		/// Get/Set parseEncapsulatedData. Reloading data is required after this property is reset.
@@ -46,11 +47,11 @@ namespace LipingShare.LCLib.Asn1Processor
 		{ 
 			get
 			{
-				return rootNode.ParseEncapsulatedData;
+				return rootNodes[0].ParseEncapsulatedData;
 			}
 			set
 			{
-				rootNode.ParseEncapsulatedData = value;
+				rootNodes[0].ParseEncapsulatedData = value;
 			}
 		}
 
@@ -78,6 +79,7 @@ namespace LipingShare.LCLib.Asn1Processor
         /// <param name="fileName">File name.</param>
         public void LoadData(string fileName)
         {
+            rootNodes.Clear();
             FileStream fs = new FileStream(fileName, FileMode.Open);
             rawData = new byte[fs.Length];
             fs.Read(rawData, 0, (int)fs.Length);
@@ -115,10 +117,19 @@ namespace LipingShare.LCLib.Asn1Processor
         /// <param name="stream">Stream data.</param>
         public void LoadData(Stream stream)
         {
+            rootNodes.Clear();
+
             stream.Position = 0;
-            if (!rootNode.LoadData(stream))
+
+            while (stream.Position < stream.Length-1)
             {
-                throw new Exception("Failed to load data.");
+                Asn1Node rootNode = new Asn1Node(stream.Position);
+                
+                if (!rootNode.LoadData(stream))
+                {
+                    throw new Exception("Failed to load data.");
+                }
+                rootNodes.Add(rootNode);
             }
             rawData = new byte[stream.Length];
             stream.Position = 0;
@@ -132,18 +143,21 @@ namespace LipingShare.LCLib.Asn1Processor
         public void SaveData(string fileName)
         {
             FileStream fs = new FileStream(fileName, FileMode.Create);
-            rootNode.SaveData(fs);
+            foreach (var rootNode in rootNodes)
+            {
+                rootNode.SaveData(fs);
+            }
             fs.Close();
         }
 
         /// <summary>
         /// Get root node.
         /// </summary>
-        public Asn1Node RootNode
+        public Asn1Node[] RootNodes
         {
             get
             {
-                return rootNode;
+                return rootNodes.ToArray();
             }
         }
 
@@ -154,7 +168,13 @@ namespace LipingShare.LCLib.Asn1Processor
         /// <returns>Asn1Node or null.</returns>
         public Asn1Node GetNodeByPath(string nodePath)
         {
-            return rootNode.GetDescendantNodeByPath(nodePath);
+            foreach (var rootNode in rootNodes)
+            {
+                Asn1Node r = rootNode.GetDescendantNodeByPath(nodePath);
+                if (r != null)
+                    return r;
+            }
+            return null;
         }
 
 		/// <summary>
@@ -164,8 +184,14 @@ namespace LipingShare.LCLib.Asn1Processor
 		/// <returns>Asn1Node or null.</returns>
 		public Asn1Node GetNodeByOid(string oid)
 		{
-			return Asn1Node.GetDecendantNodeByOid(oid, rootNode);
-		}       
+            foreach (var rootNode in rootNodes)
+            {
+                Asn1Node r = Asn1Node.GetDecendantNodeByOid(oid, rootNode);
+                if (r != null)
+                    return r;
+            }
+            return null;
+        }       
 
         /// <summary>
         /// Generate node text header. This method is used by GetNodeText to put heading.
@@ -185,7 +211,7 @@ namespace LipingShare.LCLib.Asn1Processor
         /// <returns>Text string.</returns>
         public override string ToString()
         {
-            return GetNodeText(rootNode, 100);
+            return GetNodeText(rootNodes[0], 100);
         }
 
         /// <summary>

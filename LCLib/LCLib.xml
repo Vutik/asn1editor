@@ -132,9 +132,14 @@
             <param name="nodePath">relative node path that refer to current node.</param>
             <returns></returns>
         </member>
-        <member name="P:LipingShare.LCLib.Asn1Processor.IAsn1Node.Tag">
+        <member name="P:LipingShare.LCLib.Asn1Processor.IAsn1Node.TagClass">
             <summary>
             Get/Set tag value.
+            </summary>
+        </member>
+        <member name="P:LipingShare.LCLib.Asn1Processor.IAsn1Node.TagNum">
+            <summary>
+            
             </summary>
         </member>
         <member name="P:LipingShare.LCLib.Asn1Processor.IAsn1Node.TagName">
@@ -245,6 +250,11 @@
             Constructor, initialize all the members.
             </summary>
         </member>
+        <member name="M:LipingShare.LCLib.Asn1Processor.Asn1Node.#ctor(System.Int64)">
+            <summary>
+            Constructor, initialize all the members.
+            </summary>
+        </member>
         <member name="P:LipingShare.LCLib.Asn1Processor.Asn1Node.IsIndefiniteLength">
             <summary>
             Get/Set isIndefiniteLength.
@@ -256,7 +266,7 @@
             </summary>
             <returns>new node.</returns>
         </member>
-        <member name="P:LipingShare.LCLib.Asn1Processor.Asn1Node.Tag">
+        <member name="P:LipingShare.LCLib.Asn1Processor.Asn1Node.TagClass">
             <summary>
             Get/Set tag value.
             </summary>
@@ -631,7 +641,7 @@
             </summary>
             <param name="fileName">File name.</param>
         </member>
-        <member name="P:LipingShare.LCLib.Asn1Processor.Asn1Parser.RootNode">
+        <member name="P:LipingShare.LCLib.Asn1Processor.Asn1Parser.RootNodes">
             <summary>
             Get root node.
             </summary>
@@ -883,6 +893,15 @@
             <param name="node">node.</param>
             <param name="mask">mask <see cref="T:LipingShare.LCLib.Asn1Processor.Asn1Node.TagTextMask"/>.</param>
         </member>
+        <member name="M:LipingShare.LCLib.Asn1Processor.Asn1TreeNode.#ctor(LipingShare.LCLib.Asn1Processor.Asn1Node,System.UInt32,LipingShare.LCLib.Asn1Processor.AsnPathAliasDictionary)">
+            <summary>
+            Use an Asn1Node and display label mask to construct an Asn1TreeNode.
+            Mask is defined in <see cref="T:LipingShare.LCLib.Asn1Processor.Asn1Node.TagTextMask"/>.
+            </summary>
+            <param name="node">node.</param>
+            <param name="mask">mask <see cref="T:LipingShare.LCLib.Asn1Processor.Asn1Node.TagTextMask"/>.</param>
+            <param name="dict">dict.</param>
+        </member>
         <member name="M:LipingShare.LCLib.Asn1Processor.Asn1TreeNode.AddSubNode(LipingShare.LCLib.Asn1Processor.Asn1TreeNode,System.UInt32,System.Windows.Forms.TreeView)">
             <summary>
             Following node.Adn1Node to add subnodes. It is special for paste a node tree.
@@ -1078,6 +1097,22 @@
             <param name="length">source length.</param>
             <returns>result bytes.</returns>
         </member>
+        <member name="M:LipingShare.LCLib.Asn1Processor.Asn1Util.DerTagEncode(System.IO.Stream,System.Byte,System.Int32)">
+            <summary>
+            ASN.1 DER length decoder.
+            </summary>
+            <param name="bt">Source stream.</param>
+            <param name="isIndefiniteLength">Output parameter.</param>
+            <returns>Output length.</returns>
+        </member>
+        <member name="M:LipingShare.LCLib.Asn1Processor.Asn1Util.DerTagDecode(System.IO.Stream,System.Boolean@,System.Byte@,System.Int32@)">
+            <summary>
+            ASN.1 DER length decoder.
+            </summary>
+            <param name="bt">Source stream.</param>
+            <param name="isIndefiniteLength">Output parameter.</param>
+            <returns>Output length.</returns>
+        </member>
         <member name="M:LipingShare.LCLib.Asn1Processor.Asn1Util.DerLengthDecode(System.IO.Stream,System.Boolean@)">
             <summary>
             ASN.1 DER length decoder.
@@ -1086,12 +1121,12 @@
             <param name="isIndefiniteLength">Output parameter.</param>
             <returns>Output length.</returns>
         </member>
-        <member name="M:LipingShare.LCLib.Asn1Processor.Asn1Util.GetTagName(System.Byte)">
+        <member name="M:LipingShare.LCLib.Asn1Processor.Asn1Util.GetTagName(System.Byte,System.Int32)">
             <summary>
-            Decode tag value to return tag name.
+            Decode tag_class value to return tag_class name.
             </summary>
-            <param name="tag">input tag.</param>
-            <returns>tag name.</returns>
+            <param name="tag_class">input tag_class.</param>
+            <returns>tag_class name.</returns>
         </member>
         <member name="M:LipingShare.LCLib.Asn1Processor.Asn1Util.ReadRegInfo(System.String,System.String)">
             <summary>
@@ -1350,7 +1385,7 @@
              for example the last editor winddow position, size, hex viewer state, and text viewer state.
              3. Added the application friendly name in the registry to have better "open with" support.
              4. Added Asn1Editor.Configuration class to save some screen related information.
-             5. Zero length bit-string decoding bug fix. -- Thanks to Gustaf Björklund for fixing the bug.
+             5. Zero length bit-string decoding bug fix. -- Thanks to Gustaf Bjцrklund for fixing the bug.
              
              04/04/2005: (V2005.04.02 - 1.0.12)
              1. Bug fix to show the opening file name.
@@ -1376,7 +1411,7 @@
             	Bug Fix for general string decoding.
             	
             	11/05/2003:
-            	Thanks to Xavier Monés for the bug report and suggestions.
+            	Thanks to Xavier Monйs for the bug report and suggestions.
             	Some changes are made to encod/decode UTF8 and BMP string correctly.
             	
             	10/10/2003:

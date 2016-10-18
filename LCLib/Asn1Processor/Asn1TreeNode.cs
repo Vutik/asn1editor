@@ -36,6 +36,7 @@ namespace LipingShare.LCLib.Asn1Processor
 	public class Asn1TreeNode : TreeNode
 	{
         private Asn1Node asn1Node = new Asn1Node();
+       
 
         /// <summary>
         /// Get asn1Node member object.
@@ -67,13 +68,28 @@ namespace LipingShare.LCLib.Asn1Processor
             this.Text = node.GetLabel(mask);
         }
 
-		/// <summary>
-		/// Following node.Adn1Node to add subnodes. It is special for paste a node tree.
-		/// </summary>
-		/// <param name="node">node.</param>
-		/// <param name="mask">mask.</param>
-		/// <param name="treeView">hosting TreeView control.</param>
-		public static void AddSubNode(Asn1TreeNode node, uint mask, TreeView treeView)
+        /// <summary>
+        /// Use an Asn1Node and display label mask to construct an Asn1TreeNode.
+        /// Mask is defined in <see cref="Asn1Node.TagTextMask"/>.
+        /// </summary>
+        /// <param name="node">node.</param>
+        /// <param name="mask">mask <see cref="Asn1Node.TagTextMask"/>.</param>
+        /// <param name="dict">dict.</param>
+        public Asn1TreeNode(Asn1Node node, uint mask, AsnPathAliasDictionary dict)
+        {
+           
+            asn1Node = node;
+            this.Text = node.GetLabel(mask, dict);
+            
+        }
+
+        /// <summary>
+        /// Following node.Adn1Node to add subnodes. It is special for paste a node tree.
+        /// </summary>
+        /// <param name="node">node.</param>
+        /// <param name="mask">mask.</param>
+        /// <param name="treeView">hosting TreeView control.</param>
+        public static void AddSubNode(Asn1TreeNode node, uint mask, TreeView treeView)
 		{
 			for (int i=0; i<node.ANode.ChildNodeCount; i++)
 			{

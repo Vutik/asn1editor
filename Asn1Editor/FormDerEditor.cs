@@ -29,6 +29,7 @@ using System.Drawing;
 using System.Collections;
 using System.Windows.Forms;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using LipingShare.LCLib.Asn1Processor;
 
@@ -113,6 +114,7 @@ namespace LipingShare.Asn1Editor
         private System.Windows.Forms.MenuItem menuItemEditInHexMode;
         private const string WinBaseTitle = "ASN.1 Editor";
         Asn1Parser xParser = new Asn1Parser();
+        AsnPathAliasDictionary dict = new AsnPathAliasDictionary();
         string editingFile = "";
         private System.Windows.Forms.MenuItem menuItem9;
         private System.Windows.Forms.MenuItem menuItemHexViewer;
@@ -125,6 +127,15 @@ namespace LipingShare.Asn1Editor
 		private System.Windows.Forms.MenuItem menuItemParseEncapsulatedData;
         private int refreshNodeCounter = 1;
         private FormViewText textViewer = new FormViewText();
+        private MenuItem menuItemAddAlias;
+        private MenuItem menuItemDelAlias;
+        private OpenFileDialog openFileDialogDict;
+        private MenuItem menuItem11;
+        private MenuItem menuItemAliasLoad;
+        private MenuItem menuItemAliasSave;
+        private SaveFileDialog saveFileDialogDict;
+        private ToolBarButton toolBarButtonExpandAll;
+        private ToolBarButton toolBarButtonCollapseAll;
         private bool firstRunTextViewer = true;
 
         public FormDerEditor()
@@ -220,6 +231,9 @@ namespace LipingShare.Asn1Editor
             this.menuItemHelp = new System.Windows.Forms.MenuItem();
             this.menuItemIntroduction = new System.Windows.Forms.MenuItem();
             this.menuItemAbout = new System.Windows.Forms.MenuItem();
+            this.menuItem11 = new System.Windows.Forms.MenuItem();
+            this.menuItemAliasLoad = new System.Windows.Forms.MenuItem();
+            this.menuItemAliasSave = new System.Windows.Forms.MenuItem();
             this.contextMenuTreeNode = new System.Windows.Forms.ContextMenu();
             this.menuItemNodeEdit = new System.Windows.Forms.MenuItem();
             this.menuItemViewNodeText = new System.Windows.Forms.MenuItem();
@@ -238,6 +252,8 @@ namespace LipingShare.Asn1Editor
             this.menuItemNodeRefresh = new System.Windows.Forms.MenuItem();
             this.menuItem10 = new System.Windows.Forms.MenuItem();
             this.menuItemParseEncapsulatedData = new System.Windows.Forms.MenuItem();
+            this.menuItemAddAlias = new System.Windows.Forms.MenuItem();
+            this.menuItemDelAlias = new System.Windows.Forms.MenuItem();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.toolBar1 = new System.Windows.Forms.ToolBar();
@@ -258,6 +274,10 @@ namespace LipingShare.Asn1Editor
             this.imageListDataType = new System.Windows.Forms.ImageList(this.components);
             this.panel1 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
+            this.openFileDialogDict = new System.Windows.Forms.OpenFileDialog();
+            this.saveFileDialogDict = new System.Windows.Forms.SaveFileDialog();
+            this.toolBarButtonExpandAll = new System.Windows.Forms.ToolBarButton();
+            this.toolBarButtonCollapseAll = new System.Windows.Forms.ToolBarButton();
             ((System.ComponentModel.ISupportInitialize)(this.FileNamePanel)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.FileSizePanel)).BeginInit();
             this.panel1.SuspendLayout();
@@ -296,7 +316,8 @@ namespace LipingShare.Asn1Editor
             this.menuItemEdit,
             this.menuItemView,
             this.menuItem7,
-            this.menuItemHelp});
+            this.menuItemHelp,
+            this.menuItem11});
             // 
             // menuItemFile
             // 
@@ -426,6 +447,7 @@ namespace LipingShare.Asn1Editor
             // 
             // menuItemShowNodePath
             // 
+            this.menuItemShowNodePath.Checked = true;
             this.menuItemShowNodePath.Index = 1;
             this.menuItemShowNodePath.Text = "Show node path";
             this.menuItemShowNodePath.Click += new System.EventHandler(this.menuItemShowNodePath_Click);
@@ -498,6 +520,26 @@ namespace LipingShare.Asn1Editor
             this.menuItemAbout.Text = "&About";
             this.menuItemAbout.Click += new System.EventHandler(this.menuItemAbout_Click);
             // 
+            // menuItem11
+            // 
+            this.menuItem11.Index = 5;
+            this.menuItem11.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItemAliasLoad,
+            this.menuItemAliasSave});
+            this.menuItem11.Text = "Alias";
+            // 
+            // menuItemAliasLoad
+            // 
+            this.menuItemAliasLoad.Index = 0;
+            this.menuItemAliasLoad.Text = "Load";
+            this.menuItemAliasLoad.Click += new System.EventHandler(this.menuItemAliasLoad_Click);
+            // 
+            // menuItemAliasSave
+            // 
+            this.menuItemAliasSave.Index = 1;
+            this.menuItemAliasSave.Text = "Save";
+            this.menuItemAliasSave.Click += new System.EventHandler(this.menuItemAliasSave_Click);
+            // 
             // contextMenuTreeNode
             // 
             this.contextMenuTreeNode.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
@@ -517,7 +559,9 @@ namespace LipingShare.Asn1Editor
             this.menuItem1,
             this.menuItemNodeRefresh,
             this.menuItem10,
-            this.menuItemParseEncapsulatedData});
+            this.menuItemParseEncapsulatedData,
+            this.menuItemAddAlias,
+            this.menuItemDelAlias});
             this.contextMenuTreeNode.Popup += new System.EventHandler(this.contextMenuTreeNode_Popup);
             // 
             // menuItemNodeEdit
@@ -618,15 +662,27 @@ namespace LipingShare.Asn1Editor
             this.menuItemParseEncapsulatedData.Text = "Parse encapsulated data";
             this.menuItemParseEncapsulatedData.Click += new System.EventHandler(this.menuItemParseEncapsulatedData_Click);
             // 
+            // menuItemAddAlias
+            // 
+            this.menuItemAddAlias.Index = 17;
+            this.menuItemAddAlias.Text = "Add alias";
+            this.menuItemAddAlias.Click += new System.EventHandler(this.menuItemAddAlias_Click);
+            // 
+            // menuItemDelAlias
+            // 
+            this.menuItemDelAlias.Index = 18;
+            this.menuItemDelAlias.Text = "Del alias";
+            this.menuItemDelAlias.Click += new System.EventHandler(this.menuItemDelAlias_Click);
+            // 
             // openFileDialog
             // 
-            this.openFileDialog.Filter = "Binary (*.der; *.cer; *.pfx;*.dat)|*.der;*.cer;*.pfx;*.dat|PEM Encoded (*.pem; *." +
-                "txt; *.dat)|*.pem; *.txt|All (*.*)|*.*";
+            this.openFileDialog.Filter = "All (*.*)|*.*|Binary (*.der; *.cer; *.pfx;*.dat)|*.der;*.cer;*.pfx;*.dat|PEM Enco" +
+    "ded (*.pem; *.txt; *.dat)|*.pem; *.txt";
             // 
             // saveFileDialog
             // 
             this.saveFileDialog.Filter = "Binary (*.der; *.cer; *.pfx)|*.der;*.cer;*.pfx|PEM Encoded (*.pem; *.txt)|*.pem; " +
-                "*.txt|All (*.*)|*.*";
+    "*.txt|All (*.*)|*.*";
             // 
             // toolBar1
             // 
@@ -642,7 +698,9 @@ namespace LipingShare.Asn1Editor
             this.toolBarButton2,
             this.toolBarButtonCut,
             this.toolBarButtonDelete,
-            this.toolBarButtonNewNode});
+            this.toolBarButtonNewNode,
+            this.toolBarButtonExpandAll,
+            this.toolBarButtonCollapseAll});
             this.toolBar1.ButtonSize = new System.Drawing.Size(23, 23);
             this.toolBar1.DropDownArrows = true;
             this.toolBar1.ImageList = this.imageListToolBar;
@@ -810,11 +868,10 @@ namespace LipingShare.Asn1Editor
             treeNode15,
             treeNode16});
             this.treeView.SelectedImageIndex = 0;
-            this.treeView.ShowRootLines = false;
             this.treeView.Size = new System.Drawing.Size(792, 504);
             this.treeView.TabIndex = 2;
-            this.treeView.DoubleClick += new System.EventHandler(this.menuItemNodeEdit_Click);
             this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
+            this.treeView.DoubleClick += new System.EventHandler(this.menuItemNodeEdit_Click);
             this.treeView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeView_KeyDown);
             this.treeView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.treeView_MouseDown);
             // 
@@ -878,8 +935,29 @@ namespace LipingShare.Asn1Editor
             this.label1.TabIndex = 0;
             this.label1.Text = "Refreshing TreeView ...";
             // 
+            // openFileDialogDict
+            // 
+            this.openFileDialogDict.Filter = "XML (*.xml)|*.xml|All (*.*)|*.*";
+            // 
+            // saveFileDialogDict
+            // 
+            this.saveFileDialogDict.Filter = "XML (*.xml)|*.xml; *.txt|All (*.*)|*.*";
+            // 
+            // toolBarButtonExpandAll
+            // 
+            this.toolBarButtonExpandAll.ImageIndex = 26;
+            this.toolBarButtonExpandAll.Name = "toolBarButtonExpandAll";
+            this.toolBarButtonExpandAll.ToolTipText = "Expand All";
+            // 
+            // toolBarButtonCollapseAll
+            // 
+            this.toolBarButtonCollapseAll.ImageIndex = 26;
+            this.toolBarButtonCollapseAll.Name = "toolBarButtonCollapseAll";
+            this.toolBarButtonCollapseAll.ToolTipText = "Collapse All";
+            // 
             // FormDerEditor
             // 
+            this.AllowDrop = true;
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
             this.ClientSize = new System.Drawing.Size(792, 553);
             this.Controls.Add(this.treeView);
@@ -891,11 +969,13 @@ namespace LipingShare.Asn1Editor
             this.Name = "FormDerEditor";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "ASN.1 Editor";
-            this.SizeChanged += new System.EventHandler(this.FormDerEditor_SizeChanged);
             this.Activated += new System.EventHandler(this.FormDerEditor_Activated);
-            this.Move += new System.EventHandler(this.FormDerEditor_Move);
             this.Closing += new System.ComponentModel.CancelEventHandler(this.FormDerEditor_Closing);
             this.Load += new System.EventHandler(this.FormDerEditor_Load);
+            this.SizeChanged += new System.EventHandler(this.FormDerEditor_SizeChanged);
+            this.DragDrop += new System.Windows.Forms.DragEventHandler(this.FormDerEditor_DragDrop);
+            this.DragEnter += new System.Windows.Forms.DragEventHandler(this.FormDerEditor_DragEnter);
+            this.Move += new System.EventHandler(this.FormDerEditor_Move);
             ((System.ComponentModel.ISupportInitialize)(this.FileNamePanel)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.FileSizePanel)).EndInit();
             this.panel1.ResumeLayout(false);
@@ -918,6 +998,7 @@ namespace LipingShare.Asn1Editor
                 dc.statusBar.Panels[1].Text = "Size:";
                 dc.Text = WinBaseTitle;
                 dc.treeView.Nodes.Clear();
+                dc.menuItemHexViewer_Click(new object(), new EventArgs());
                 if (args.Length > 0)
                 {
                     dc.OpenFile(args[0]);
@@ -955,11 +1036,11 @@ namespace LipingShare.Asn1Editor
             return retval;
         }
 
-        Asn1Node RootNode
+        Asn1Node[] RootNodes
         {
             get
             {
-                return xParser.RootNode;
+                return xParser.RootNodes;
             }
         }
 
@@ -1085,7 +1166,7 @@ namespace LipingShare.Asn1Editor
             hexViewer.Connected = false;
             RefreshTreeView(treeView, mask);
             hexViewer.Connected = true;
-            hexViewer.RootNode = xParser.RootNode;
+            hexViewer.RootNodes = xParser.RootNodes;
             if (treeView.Nodes.Count > 0)
             {
                 treeView.SelectedNode = null;
@@ -1210,25 +1291,31 @@ namespace LipingShare.Asn1Editor
                 if (saveFileDialog.FilterIndex == 1)
                 {
                     Stream fs = saveFileDialog.OpenFile();
-                    Asn1Node aNode = xParser.RootNode;
-                    aNode.SaveData(fs);
+                    foreach (var aNode in RootNodes)
+                    {
+                       aNode.SaveData(fs);
+                    }
+                   
                     editingFile = saveFileDialog.FileName;
                     editingFileSize = (int)fs.Length;
                     fs.Close();
                 }
                 else
                 {
-                    Asn1Node aNode = xParser.RootNode;
-                    string pemHeader = "";
-                    if (editingFile.Length > 0)
+                    foreach (var aNode in RootNodes)
                     {
-                        pemHeader = Asn1Util.GetPemFileHeader(editingFile);
+                        //Asn1Node aNode = xParser.RootNode;
+                        string pemHeader = "";
+                        if (editingFile.Length > 0)
+                        {
+                            pemHeader = Asn1Util.GetPemFileHeader(editingFile);
+                        }
+                        if (pemHeader == null || pemHeader.Length < 1)
+                        {
+                            pemHeader = System.IO.Path.GetFileName(editingFile).Replace("-", "");
+                        }
+                        SaveNodeAsPemFile(aNode, saveFileDialog.FileName, pemHeader);
                     }
-                    if (pemHeader == null || pemHeader.Length < 1)
-                    {
-                        pemHeader = System.IO.Path.GetFileName(editingFile).Replace("-", "");
-                    }
-                    SaveNodeAsPemFile(aNode, saveFileDialog.FileName, pemHeader);
                     editingFile = saveFileDialog.FileName;
                 }
                 openFileDialog.FilterIndex = saveFileDialog.FilterIndex;
@@ -1249,17 +1336,23 @@ namespace LipingShare.Asn1Editor
             if (openFileDialog.FilterIndex == 1)
             {
                 FileStream fs = new FileStream(editingFile, System.IO.FileMode.Create);
-                Asn1Node aNode = xParser.RootNode;
-                aNode.SaveData(fs);
+                foreach (var aNode in RootNodes)
+                {
+                    //Asn1Node aNode = xParser.RootNode;
+                    aNode.SaveData(fs);
+                }
                 editingFileSize = (int)fs.Length;
                 ShowCurrentFileInfo();
                 fs.Close();        
             }
             else
             {
-                Asn1Node aNode = xParser.RootNode;
-                string pemHeader = Asn1Util.GetPemFileHeader(editingFile);
-                SaveNodeAsPemFile(aNode, editingFile, pemHeader);              
+                foreach (var aNode in RootNodes)
+                {
+                    //Asn1Node aNode = xParser.RootNode;
+                    string pemHeader = Asn1Util.GetPemFileHeader(editingFile);
+                    SaveNodeAsPemFile(aNode, editingFile, pemHeader);
+                }
             }
         }
 
@@ -1348,8 +1441,12 @@ namespace LipingShare.Asn1Editor
             {
                 hexViewer.Connected = false;
                 ClearChildTreeNodes(treeView.Nodes);
-                xParser.RootNode.ClearAll();
-                hexViewer.RootNode = null;
+                foreach (var RootNode in xParser.RootNodes)
+                {
+                    RootNode.ClearAll();
+                }
+                hexViewer.RootNodes = null;
+                
                 editingFile = "";
                 editingFileSize = 0;
                 ShowCurrentFileInfo();
@@ -1468,6 +1565,14 @@ namespace LipingShare.Asn1Editor
             {
                 menuItemNewNode_Click(sender, e);
             }
+            else if (e.Button == toolBarButtonExpandAll)
+            {
+                treeView.ExpandAll();
+            }
+            else if (e.Button == toolBarButtonCollapseAll)
+            {
+                treeView.CollapseAll();
+            }
         }
 
         private void SetButton()
@@ -1475,8 +1580,8 @@ namespace LipingShare.Asn1Editor
             bool isDataReady = Asn1ClipboardData.IsDataReady();
             toolBarButtonOpen.Enabled = true; // Open
             toolBarButtonSave.Enabled = editingFile.Length > 0; // Save
-            toolBarButtonSaveAs.Enabled = (xParser.RootNode != null) &&
-                ((xParser.RootNode.Data != null) || (xParser.RootNode.ChildNodeCount > 0)); // Save as
+            toolBarButtonSaveAs.Enabled = (xParser.RootNodes != null) && (xParser.RootNodes.Length > 0) &&
+                ((xParser.RootNodes[0].Data != null) || (xParser.RootNodes[0].ChildNodeCount > 0)); // Save as
             toolBarButtonCopy.Enabled = treeView.SelectedNode != null; // Copy
             toolBarButtonPastAsLast.Enabled = 
                 (treeView.SelectedNode != null) && 
@@ -1513,7 +1618,7 @@ namespace LipingShare.Asn1Editor
 			if (treeView.SelectedNode != null)
 			{
 				menuItemParseEncapsulatedData.Enabled = 
-					(((Asn1TreeNode)(treeView.SelectedNode)).ANode.Tag & Asn1TagClasses.CONSTRUCTED) == 0; 
+					(((Asn1TreeNode)(treeView.SelectedNode)).ANode.TagClass & Asn1TagClasses.CONSTRUCTED) == 0; 
 				menuItemParseEncapsulatedData.Checked = 
 					(((Asn1TreeNode)(treeView.SelectedNode)).ANode.ParseEncapsulatedData); 
 			}
@@ -1536,7 +1641,7 @@ namespace LipingShare.Asn1Editor
             {
                 if (treeView.Nodes.Count < 1)
                 {
-                    if (FormNodeContentEditor.EditNode(this, xParser.RootNode, true, true))
+                    if (FormNodeContentEditor.EditNode(this, xParser.RootNodes[0], true, true))
                     {
                         BuildTreeView(treeView, this.GenMask());
                         RefreshTree();
@@ -1695,13 +1800,17 @@ namespace LipingShare.Asn1Editor
             try
             {
                 ClearChildTreeNodes(treeView.Nodes);
-                Asn1TreeNode rootTreeNode = new Asn1TreeNode(RootNode, mask);
-                rootTreeNode.ImageIndex = (int)ImgIndex.ROOT;
-                rootTreeNode.SelectedImageIndex = (int)ImgIndex.ROOT_SELECTED;
-                BuildChildTreeNode(rootTreeNode, mask);
-                treeView.Nodes.Add(rootTreeNode);
-                rootTreeNode.ExpandAll();
-                treeView.SelectedNode = rootTreeNode;
+                foreach (var rootNode in RootNodes)
+                {
+                    Asn1TreeNode rootTreeNode = new Asn1TreeNode(rootNode, mask, dict);
+                    rootTreeNode.ImageIndex = (int)ImgIndex.ROOT;
+                    rootTreeNode.SelectedImageIndex = (int)ImgIndex.ROOT_SELECTED;
+                    BuildChildTreeNode(rootTreeNode, mask);
+                    treeView.Nodes.Add(rootTreeNode);
+                    rootTreeNode.ExpandAll();
+                }
+               
+                //treeView.SelectedNode = rootTreeNode;
             }
             finally
             {
@@ -1712,22 +1821,29 @@ namespace LipingShare.Asn1Editor
 		public void RefreshTreeView(TreeView treeView, uint mask)
 		{
 			treeView.Visible = false;
+            treeView.BeginUpdate();
+		   
 			try
 			{
 				if (treeView.Nodes.Count<1) return;
-				Asn1TreeNode rootTreeNode = (Asn1TreeNode)treeView.Nodes[0];
-				rootTreeNode.Text = rootTreeNode.ANode.GetLabel(mask);
-				RefreshChildTreeNode(rootTreeNode, mask);
+			    foreach (Asn1TreeNode rootTreeNode in treeView.Nodes)
+			    {
+			        //Asn1TreeNode rootTreeNode = (Asn1TreeNode)treeView.Nodes[0];
+				    rootTreeNode.Text = rootTreeNode.ANode.GetLabel(mask, dict);
+				    RefreshChildTreeNode(rootTreeNode, mask);
+			    }
+				
 			}
 			finally
 			{
+                treeView.EndUpdate();
 				treeView.Visible = true;
 			}
 		}
 
 		public void SetNodeImgIndex(Asn1TreeNode node)
 		{
-			int tag = node.ANode.Tag;
+			int tag = node.ANode.TagClass;
 			int tagClass = (tag & Asn1TagClasses.CLASS_MASK);
 			if (tagClass == Asn1TagClasses.CONTEXT_SPECIFIC ||
 				tagClass == Asn1TagClasses.APPLICATION ||
@@ -1829,7 +1945,7 @@ namespace LipingShare.Asn1Editor
 			SetNodeImgIndex(node);
 			for (int i=0; i<node.Nodes.Count; i++)
 			{
-				node.Nodes[i].Text = ((Asn1TreeNode)node.Nodes[i]).ANode.GetLabel(mask);
+				node.Nodes[i].Text = ((Asn1TreeNode)node.Nodes[i]).ANode.GetLabel(mask, dict);
 				RefreshChildTreeNode((Asn1TreeNode)node.Nodes[i], mask);
 			}
 		}
@@ -1858,7 +1974,7 @@ namespace LipingShare.Asn1Editor
             Asn1TreeNode tmpNode; 
             for (i=0; i<tNode.ANode.ChildNodeCount; i++)
             {
-                tmpNode = new Asn1TreeNode(tNode.ANode.GetChildNode(i), mask);
+                tmpNode = new Asn1TreeNode(tNode.ANode.GetChildNode(i), mask, dict);
                 tNode.Nodes.Add(tmpNode);
                 BuildChildTreeNode(tmpNode, mask);
             }
@@ -2038,5 +2154,56 @@ namespace LipingShare.Asn1Editor
                 hexViewer.Height = this.Height;
             }
         }
-	}
+
+        private void FormDerEditor_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] str =  (string[])e.Data.GetData(DataFormats.FileDrop);
+            Debug.WriteLine(str);
+            this.OpenFile(str[0]);
+        }
+
+        private void FormDerEditor_DragEnter(object sender, DragEventArgs e)
+        {
+            if(e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effect = DragDropEffects.Copy;
+        }
+
+        private void menuItemAddAlias_Click(object sender, EventArgs e)
+        {
+            Asn1Node aNode = ((Asn1TreeNode)treeView.SelectedNode).ANode;
+            FormAsnPathAlias f;
+            if (aNode.Alias != null)
+            {
+                f = new FormAsnPathAlias(aNode.Alias);
+            }
+            else
+            {
+                f = new FormAsnPathAlias(aNode.Path);
+            }
+            f.ShowDialog(this);
+            dict.add(f.Alias);
+            RefreshTree();
+        }
+
+        private void menuItemDelAlias_Click(object sender, EventArgs e)
+        {
+            Asn1Node aNode = ((Asn1TreeNode)treeView.SelectedNode).ANode;
+            dict.del(aNode.Alias);
+            RefreshTree();
+        }
+
+        private void menuItemAliasLoad_Click(object sender, EventArgs e)
+        {
+            if (openFileDialogDict.ShowDialog() == DialogResult.OK)
+            {
+                dict.Load(openFileDialogDict.FileName);
+                RefreshTree();
+            }
+        }
+
+        private void menuItemAliasSave_Click(object sender, EventArgs e)
+        {
+            if (saveFileDialogDict.ShowDialog() == DialogResult.OK)
+                dict.Save(saveFileDialogDict.FileName);
+        }
+    }
 }

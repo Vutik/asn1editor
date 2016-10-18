@@ -138,6 +138,7 @@ namespace LipingShare.LCLib.Asn1Processor
         public static string BytesToString(byte[] bytes)
         {
             string retval = "";
+           
             if (bytes == null || bytes.Length < 1) return retval;
             char[] cretval = new char[bytes.Length];
             for (int i=0, j=0; i<bytes.Length; i++)
@@ -199,14 +200,30 @@ namespace LipingShare.LCLib.Asn1Processor
 		public static string ToHexString(byte[] bytes) 
 		{
 			if (bytes == null) return "";
-			char[] chars = new char[bytes.Length * 2];
+            int num_nl = 0;
+            string str_text = "";
+            char[] chars = new char[bytes.Length * 2];
 			int b, i;
 			for (i = 0; i < bytes.Length; i++) 
 			{
 				b = bytes[i];
-				chars[i * 2] = hexDigits[b >> 4];
+			    Char cc = (Char)b;
+			    if (Char.IsLetterOrDigit(cc))
+			    {
+			        str_text += cc;
+			        num_nl++;
+			    }
+			    else
+			    {
+                    str_text += ".";
+                }
+			    chars[i * 2] = hexDigits[b >> 4];
 				chars[i * 2 + 1] = hexDigits[b & 0xF];
 			}
+            if (num_nl > bytes.Length/2)
+            {
+                return str_text + " Hex:"+  new string(chars);
+            }
 			return new string(chars);
 		}
 
@@ -564,6 +581,86 @@ namespace LipingShare.LCLib.Asn1Processor
             }
             return i;
         }
+        /// <summary>
+        /// ASN.1 DER length decoder.
+        /// </summary>
+        /// <param name="bt">Source stream.</param>
+        /// <param name="isIndefiniteLength">Output parameter.</param>
+        /// <returns>Output length.</returns>
+        public static bool DerTagEncode(Stream bt,  byte tag_class,  int tag_num)
+        {
+            byte b = tag_class;
+            //long length = 0;
+            if (tag_num < 31)
+            {
+                /* Tag short form */
+                b = (byte)(b | tag_num);
+                bt.WriteByte(b);
+            }
+            else
+            {
+                /* Tag long form header */
+                b = (byte)(b | 0x1F);
+                bt.WriteByte(b);
+                int i;
+                /* Tag value */
+                for (i = 1; i < 5; ++i)
+                {
+                    int mask = 0x7F << (7 * i);
+                    if ((mask & tag_num) == 0) break;
+                }
+                --i;
+                int j;
+                for (j = i; j >= 0; --j)
+                {
+                    int d = 0x7F & (tag_num >> (7 * j));
+                    if (j != 0) d &= 0x80;
+                    bt.WriteByte((byte)d);
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// ASN.1 DER length decoder.
+        /// </summary>
+        /// <param name="bt">Source stream.</param>
+        /// <param name="isIndefiniteLength">Output parameter.</param>
+        /// <returns>Output length.</returns>
+        public static bool DerTagDecode(Stream bt, ref bool isIndefiniteLength, ref byte tag_class, ref int tag_num)
+        {
+            isIndefiniteLength = false;
+            //long length = 0;
+            byte b;
+            int rbb = bt.ReadByte();
+            if (rbb < 0)
+                return false;
+            b = (byte)rbb;
+            
+            tag_class = (byte)(b );
+
+            byte h, x;
+            int type;
+            h = (byte)b;
+            type = h & 0x1F;
+            if (type == 0x1F)
+            {
+                /* Multi-byte type */
+                type = 0;
+                do
+                {
+                    rbb = bt.ReadByte();
+                    if (rbb < 0)
+                        return false;
+                    x = (byte)rbb;
+                    type = (type << 7) | (0x7F & x);
+                } while (0 != (0x80 & x));
+            }
+            tag_num = type;
+           
+            return true;
+        }
+
 
         /// <summary>
         /// ASN.1 DER length decoder.
@@ -605,37 +702,37 @@ namespace LipingShare.LCLib.Asn1Processor
         }
 
         /// <summary>
-        /// Decode tag value to return tag name.
+        /// Decode tag_class value to return tag_class name.
         /// </summary>
-        /// <param name="tag">input tag.</param>
-        /// <returns>tag name.</returns>
-        static public string GetTagName(byte tag)
+        /// <param name="tag_class">input tag_class.</param>
+        /// <returns>tag_class name.</returns>
+        static public string GetTagName(byte tag_class, int tag_num)
         {
             string retval = "";
-            if ((tag & Asn1TagClasses.CLASS_MASK) != 0)
+            if ((tag_class & Asn1TagClasses.CLASS_MASK) != 0)
             {
-                switch (tag & Asn1TagClasses.CLASS_MASK)
+                switch (tag_class & Asn1TagClasses.CLASS_MASK)
                 {
                     case Asn1TagClasses.CONTEXT_SPECIFIC:
-                        retval += "CONTEXT SPECIFIC (" + ((int)(tag & Asn1Tag.TAG_MASK)).ToString() +")";
+                        retval += "CONTEXT SPECIFIC (" + tag_num.ToString() +")";
                         break;
                     case Asn1TagClasses.APPLICATION:
-                        retval += "APPLICATION (" + ((int)(tag & Asn1Tag.TAG_MASK)).ToString() +")";
+                        retval += "APPLICATION (" + tag_num.ToString() +")";
                         break;
                     case Asn1TagClasses.PRIVATE:
-                        retval += "PRIVATE (" + ((int)(tag & Asn1Tag.TAG_MASK)).ToString() +")";
+                        retval += "PRIVATE (" + tag_num.ToString() +")";
                         break;
                     case Asn1TagClasses.CONSTRUCTED:
-                        retval += "CONSTRUCTED (" + ((int)(tag & Asn1Tag.TAG_MASK)).ToString() +")";
+                        retval += "CONSTRUCTED (" + tag_num.ToString() +")";
                         break;
 					case Asn1TagClasses.UNIVERSAL:
-						retval += "UNIVERSAL (" + ((int)(tag & Asn1Tag.TAG_MASK)).ToString() +")";
+						retval += "UNIVERSAL (" + tag_num.ToString() +")";
 						break;
                 }
             }
             else
             {
-                switch (tag & Asn1Tag.TAG_MASK)
+                switch (tag_class & Asn1Tag.TAG_MASK)
                 {
                     case Asn1Tag.BOOLEAN:
                         retval += "BOOLEAN";
