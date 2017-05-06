@@ -208,7 +208,7 @@ namespace LipingShare.LCLib.Asn1Processor
 			{
 				b = bytes[i];
 			    Char cc = (Char)b;
-			    if (Char.IsLetterOrDigit(cc))
+			    if (Char.IsLetterOrDigit(cc) || cc == '+' || cc == '-' || cc == '*' || cc == '#'|| cc == '@')
 			    {
 			        str_text += cc;
 			        num_nl++;

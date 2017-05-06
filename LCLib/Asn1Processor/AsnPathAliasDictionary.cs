@@ -61,6 +61,11 @@ namespace LipingShare.LCLib.Asn1Processor
             return false;
         }
 
+        public Dictionary<string, AsnPathAlias>  getAll()
+        {
+            return dictionary_;
+        }
+
         [DataMember]
         protected Dictionary<string, AsnPathAlias> dictionary_ = new Dictionary<string, AsnPathAlias>();
 

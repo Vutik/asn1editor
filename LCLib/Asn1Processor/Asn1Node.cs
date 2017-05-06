@@ -1638,7 +1638,7 @@ namespace LipingShare.LCLib.Asn1Processor
             //xtag = (byte) xdata.ReadByte();
             bool isBigTag = false;
             Asn1Util.DerTagDecode(xdata, ref isBigTag, ref xtag, ref xtag_num);
-            Debug.WriteLine("Tag {0:X} num {1}", xtag, xtag_num);
+            //Debug.WriteLine("Tag {0:X} num {1}", xtag, xtag_num);
             TagLength = (int)(xdata.Position - curPosition);
             xdata.Position = curPosition;
             int maskedTag = xtag & Asn1Tag.TAG_MASK;

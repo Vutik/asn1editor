@@ -13,3 +13,12 @@ Changes
 * Migrated to VS2015
 * Asn1EditorSetup is an older visual studio project type that's now obsolete
 * Added license file to repo
+
+Denis Lubinski Changes
+
+-------
+
+* Multybyte asn Tag
+* Alias for node by regexp
+* Many asn item in one file
+* Mayby edit not work :(. I use it only for view

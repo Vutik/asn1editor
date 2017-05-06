@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.textBoxName = new System.Windows.Forms.TextBox();
             this.textBoxRegExp = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -37,6 +38,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.textBoxValueAlias = new System.Windows.Forms.TextBox();
             this.buttonOk = new System.Windows.Forms.Button();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.SuspendLayout();
             // 
             // textBoxName
@@ -85,12 +87,13 @@
             this.comboBoxValueConvertType.FormattingEnabled = true;
             this.comboBoxValueConvertType.Items.AddRange(new object[] {
             "",
-            "alias",
+            "enum",
             "dec-hex"});
             this.comboBoxValueConvertType.Location = new System.Drawing.Point(99, 66);
             this.comboBoxValueConvertType.Name = "comboBoxValueConvertType";
             this.comboBoxValueConvertType.Size = new System.Drawing.Size(121, 21);
             this.comboBoxValueConvertType.TabIndex = 5;
+            this.comboBoxValueConvertType.SelectedIndexChanged += new System.EventHandler(this.comboBoxValueConvertType_SelectedIndexChanged);
             // 
             // label4
             // 
@@ -108,6 +111,7 @@
             this.textBoxValueAlias.Name = "textBoxValueAlias";
             this.textBoxValueAlias.Size = new System.Drawing.Size(289, 152);
             this.textBoxValueAlias.TabIndex = 7;
+            this.toolTip1.SetToolTip(this.textBoxValueAlias, "example for type enum\r\n00 text1\r\n01 tex2");
             // 
             // buttonOk
             // 
@@ -151,5 +155,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox textBoxValueAlias;
         private System.Windows.Forms.Button buttonOk;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }

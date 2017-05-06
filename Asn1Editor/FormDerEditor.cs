@@ -136,6 +136,7 @@ namespace LipingShare.Asn1Editor
         private SaveFileDialog saveFileDialogDict;
         private ToolBarButton toolBarButtonExpandAll;
         private ToolBarButton toolBarButtonCollapseAll;
+        private MenuItem menuItemAliasList;
         private bool firstRunTextViewer = true;
 
         public FormDerEditor()
@@ -171,32 +172,32 @@ namespace LipingShare.Asn1Editor
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormDerEditor));
-            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Node13");
-            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Node14");
-            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Node15");
-            System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Node0", new System.Windows.Forms.TreeNode[] {
-            treeNode1,
-            treeNode2,
-            treeNode3});
-            System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Node7");
-            System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Node11");
-            System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("Node12");
-            System.Windows.Forms.TreeNode treeNode8 = new System.Windows.Forms.TreeNode("Node6", new System.Windows.Forms.TreeNode[] {
-            treeNode5,
-            treeNode6,
-            treeNode7});
-            System.Windows.Forms.TreeNode treeNode9 = new System.Windows.Forms.TreeNode("Node9");
-            System.Windows.Forms.TreeNode treeNode10 = new System.Windows.Forms.TreeNode("Node10");
-            System.Windows.Forms.TreeNode treeNode11 = new System.Windows.Forms.TreeNode("Node5", new System.Windows.Forms.TreeNode[] {
-            treeNode8,
-            treeNode9,
-            treeNode10});
-            System.Windows.Forms.TreeNode treeNode12 = new System.Windows.Forms.TreeNode("Node1", new System.Windows.Forms.TreeNode[] {
-            treeNode11});
-            System.Windows.Forms.TreeNode treeNode13 = new System.Windows.Forms.TreeNode("Node2");
-            System.Windows.Forms.TreeNode treeNode14 = new System.Windows.Forms.TreeNode("Node3");
-            System.Windows.Forms.TreeNode treeNode15 = new System.Windows.Forms.TreeNode("Node4");
-            System.Windows.Forms.TreeNode treeNode16 = new System.Windows.Forms.TreeNode("Node8");
+            System.Windows.Forms.TreeNode treeNode17 = new System.Windows.Forms.TreeNode("Node13");
+            System.Windows.Forms.TreeNode treeNode18 = new System.Windows.Forms.TreeNode("Node14");
+            System.Windows.Forms.TreeNode treeNode19 = new System.Windows.Forms.TreeNode("Node15");
+            System.Windows.Forms.TreeNode treeNode20 = new System.Windows.Forms.TreeNode("Node0", new System.Windows.Forms.TreeNode[] {
+            treeNode17,
+            treeNode18,
+            treeNode19});
+            System.Windows.Forms.TreeNode treeNode21 = new System.Windows.Forms.TreeNode("Node7");
+            System.Windows.Forms.TreeNode treeNode22 = new System.Windows.Forms.TreeNode("Node11");
+            System.Windows.Forms.TreeNode treeNode23 = new System.Windows.Forms.TreeNode("Node12");
+            System.Windows.Forms.TreeNode treeNode24 = new System.Windows.Forms.TreeNode("Node6", new System.Windows.Forms.TreeNode[] {
+            treeNode21,
+            treeNode22,
+            treeNode23});
+            System.Windows.Forms.TreeNode treeNode25 = new System.Windows.Forms.TreeNode("Node9");
+            System.Windows.Forms.TreeNode treeNode26 = new System.Windows.Forms.TreeNode("Node10");
+            System.Windows.Forms.TreeNode treeNode27 = new System.Windows.Forms.TreeNode("Node5", new System.Windows.Forms.TreeNode[] {
+            treeNode24,
+            treeNode25,
+            treeNode26});
+            System.Windows.Forms.TreeNode treeNode28 = new System.Windows.Forms.TreeNode("Node1", new System.Windows.Forms.TreeNode[] {
+            treeNode27});
+            System.Windows.Forms.TreeNode treeNode29 = new System.Windows.Forms.TreeNode("Node2");
+            System.Windows.Forms.TreeNode treeNode30 = new System.Windows.Forms.TreeNode("Node3");
+            System.Windows.Forms.TreeNode treeNode31 = new System.Windows.Forms.TreeNode("Node4");
+            System.Windows.Forms.TreeNode treeNode32 = new System.Windows.Forms.TreeNode("Node8");
             this.statusBar = new System.Windows.Forms.StatusBar();
             this.FileNamePanel = new System.Windows.Forms.StatusBarPanel();
             this.FileSizePanel = new System.Windows.Forms.StatusBarPanel();
@@ -269,6 +270,8 @@ namespace LipingShare.Asn1Editor
             this.toolBarButtonCut = new System.Windows.Forms.ToolBarButton();
             this.toolBarButtonDelete = new System.Windows.Forms.ToolBarButton();
             this.toolBarButtonNewNode = new System.Windows.Forms.ToolBarButton();
+            this.toolBarButtonExpandAll = new System.Windows.Forms.ToolBarButton();
+            this.toolBarButtonCollapseAll = new System.Windows.Forms.ToolBarButton();
             this.imageListToolBar = new System.Windows.Forms.ImageList(this.components);
             this.treeView = new System.Windows.Forms.TreeView();
             this.imageListDataType = new System.Windows.Forms.ImageList(this.components);
@@ -276,8 +279,7 @@ namespace LipingShare.Asn1Editor
             this.label1 = new System.Windows.Forms.Label();
             this.openFileDialogDict = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialogDict = new System.Windows.Forms.SaveFileDialog();
-            this.toolBarButtonExpandAll = new System.Windows.Forms.ToolBarButton();
-            this.toolBarButtonCollapseAll = new System.Windows.Forms.ToolBarButton();
+            this.menuItemAliasList = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.FileNamePanel)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.FileSizePanel)).BeginInit();
             this.panel1.SuspendLayout();
@@ -525,7 +527,8 @@ namespace LipingShare.Asn1Editor
             this.menuItem11.Index = 5;
             this.menuItem11.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItemAliasLoad,
-            this.menuItemAliasSave});
+            this.menuItemAliasSave,
+            this.menuItemAliasList});
             this.menuItem11.Text = "Alias";
             // 
             // menuItemAliasLoad
@@ -665,7 +668,7 @@ namespace LipingShare.Asn1Editor
             // menuItemAddAlias
             // 
             this.menuItemAddAlias.Index = 17;
-            this.menuItemAddAlias.Text = "Add alias";
+            this.menuItemAddAlias.Text = "Add/Edit alias";
             this.menuItemAddAlias.Click += new System.EventHandler(this.menuItemAddAlias_Click);
             // 
             // menuItemDelAlias
@@ -781,6 +784,18 @@ namespace LipingShare.Asn1Editor
             this.toolBarButtonNewNode.Name = "toolBarButtonNewNode";
             this.toolBarButtonNewNode.ToolTipText = "New node";
             // 
+            // toolBarButtonExpandAll
+            // 
+            this.toolBarButtonExpandAll.ImageIndex = 26;
+            this.toolBarButtonExpandAll.Name = "toolBarButtonExpandAll";
+            this.toolBarButtonExpandAll.ToolTipText = "Expand All";
+            // 
+            // toolBarButtonCollapseAll
+            // 
+            this.toolBarButtonCollapseAll.ImageIndex = 26;
+            this.toolBarButtonCollapseAll.Name = "toolBarButtonCollapseAll";
+            this.toolBarButtonCollapseAll.ToolTipText = "Collapse All";
+            // 
             // imageListToolBar
             // 
             this.imageListToolBar.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListToolBar.ImageStream")));
@@ -828,45 +843,45 @@ namespace LipingShare.Asn1Editor
             this.treeView.ImageList = this.imageListDataType;
             this.treeView.Location = new System.Drawing.Point(0, 28);
             this.treeView.Name = "treeView";
-            treeNode1.Name = "";
-            treeNode1.Text = "Node13";
-            treeNode2.Name = "";
-            treeNode2.Text = "Node14";
-            treeNode3.Name = "";
-            treeNode3.Text = "Node15";
-            treeNode4.Name = "";
-            treeNode4.Text = "Node0";
-            treeNode5.Name = "";
-            treeNode5.Text = "Node7";
-            treeNode6.Name = "";
-            treeNode6.Text = "Node11";
-            treeNode7.Name = "";
-            treeNode7.Text = "Node12";
-            treeNode8.Name = "";
-            treeNode8.Text = "Node6";
-            treeNode9.Name = "";
-            treeNode9.Text = "Node9";
-            treeNode10.Name = "";
-            treeNode10.Text = "Node10";
-            treeNode11.Name = "";
-            treeNode11.Text = "Node5";
-            treeNode12.Name = "";
-            treeNode12.Text = "Node1";
-            treeNode13.Name = "";
-            treeNode13.Text = "Node2";
-            treeNode14.Name = "";
-            treeNode14.Text = "Node3";
-            treeNode15.Name = "";
-            treeNode15.Text = "Node4";
-            treeNode16.Name = "";
-            treeNode16.Text = "Node8";
+            treeNode17.Name = "";
+            treeNode17.Text = "Node13";
+            treeNode18.Name = "";
+            treeNode18.Text = "Node14";
+            treeNode19.Name = "";
+            treeNode19.Text = "Node15";
+            treeNode20.Name = "";
+            treeNode20.Text = "Node0";
+            treeNode21.Name = "";
+            treeNode21.Text = "Node7";
+            treeNode22.Name = "";
+            treeNode22.Text = "Node11";
+            treeNode23.Name = "";
+            treeNode23.Text = "Node12";
+            treeNode24.Name = "";
+            treeNode24.Text = "Node6";
+            treeNode25.Name = "";
+            treeNode25.Text = "Node9";
+            treeNode26.Name = "";
+            treeNode26.Text = "Node10";
+            treeNode27.Name = "";
+            treeNode27.Text = "Node5";
+            treeNode28.Name = "";
+            treeNode28.Text = "Node1";
+            treeNode29.Name = "";
+            treeNode29.Text = "Node2";
+            treeNode30.Name = "";
+            treeNode30.Text = "Node3";
+            treeNode31.Name = "";
+            treeNode31.Text = "Node4";
+            treeNode32.Name = "";
+            treeNode32.Text = "Node8";
             this.treeView.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode4,
-            treeNode12,
-            treeNode13,
-            treeNode14,
-            treeNode15,
-            treeNode16});
+            treeNode20,
+            treeNode28,
+            treeNode29,
+            treeNode30,
+            treeNode31,
+            treeNode32});
             this.treeView.SelectedImageIndex = 0;
             this.treeView.Size = new System.Drawing.Size(792, 504);
             this.treeView.TabIndex = 2;
@@ -943,17 +958,11 @@ namespace LipingShare.Asn1Editor
             // 
             this.saveFileDialogDict.Filter = "XML (*.xml)|*.xml; *.txt|All (*.*)|*.*";
             // 
-            // toolBarButtonExpandAll
+            // menuItemAliasList
             // 
-            this.toolBarButtonExpandAll.ImageIndex = 26;
-            this.toolBarButtonExpandAll.Name = "toolBarButtonExpandAll";
-            this.toolBarButtonExpandAll.ToolTipText = "Expand All";
-            // 
-            // toolBarButtonCollapseAll
-            // 
-            this.toolBarButtonCollapseAll.ImageIndex = 26;
-            this.toolBarButtonCollapseAll.Name = "toolBarButtonCollapseAll";
-            this.toolBarButtonCollapseAll.ToolTipText = "Collapse All";
+            this.menuItemAliasList.Index = 2;
+            this.menuItemAliasList.Text = "List";
+            this.menuItemAliasList.Click += new System.EventHandler(this.menuItemAliasList_Click);
             // 
             // FormDerEditor
             // 
@@ -1001,6 +1010,7 @@ namespace LipingShare.Asn1Editor
                 dc.menuItemHexViewer_Click(new object(), new EventArgs());
                 if (args.Length > 0)
                 {
+                    
                     dc.OpenFile(args[0]);
                 }
             }
@@ -2081,6 +2091,11 @@ namespace LipingShare.Asn1Editor
                     if (this.Left < 0) this.Left = 0;
                 }
             }
+            if (config.lastAliasFile != "")
+            {
+                dict.Load(config.lastAliasFile);
+            }
+            RefreshTree();
         }
 
         private void FormDerEditor_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -2169,6 +2184,10 @@ namespace LipingShare.Asn1Editor
 
         private void menuItemAddAlias_Click(object sender, EventArgs e)
         {
+            if (treeView.SelectedNode == null)
+            {
+                return;
+            }
             Asn1Node aNode = ((Asn1TreeNode)treeView.SelectedNode).ANode;
             FormAsnPathAlias f;
             if (aNode.Alias != null)
@@ -2196,6 +2215,7 @@ namespace LipingShare.Asn1Editor
             if (openFileDialogDict.ShowDialog() == DialogResult.OK)
             {
                 dict.Load(openFileDialogDict.FileName);
+                config.lastAliasFile = openFileDialogDict.FileName;
                 RefreshTree();
             }
         }
@@ -2203,7 +2223,17 @@ namespace LipingShare.Asn1Editor
         private void menuItemAliasSave_Click(object sender, EventArgs e)
         {
             if (saveFileDialogDict.ShowDialog() == DialogResult.OK)
+            {
                 dict.Save(saveFileDialogDict.FileName);
+                config.lastAliasFile = saveFileDialogDict.FileName;
+            }
+        }
+
+        private void menuItemAliasList_Click(object sender, EventArgs e)
+        {
+            FormAliasList f = new FormAliasList(dict);
+            f.ShowDialog(this);
+            RefreshTree();
         }
     }
 }

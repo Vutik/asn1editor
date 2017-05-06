@@ -113,6 +113,8 @@ namespace LipingShare.Asn1Editor
 
         public bool setTextViewSameAsTreeViewScreen = true; // Always use tree view location for now;
 
+	    public String lastAliasFile = "";
+
         public bool GetData()
         {
             currentScreenWidth         = Convert.ToInt32(ReadRegInfo("currentScreenWidth"));
@@ -135,7 +137,7 @@ namespace LipingShare.Asn1Editor
             textViewerHeight        = Convert.ToInt32(ReadRegInfo("textViewerHeight"));
 
             textLength        = Convert.ToInt32(ReadRegInfo("textLength"));
-
+            lastAliasFile = Convert.ToString(ReadRegInfo("lastAliasFile"));
             return true;
         }
 
@@ -160,7 +162,7 @@ namespace LipingShare.Asn1Editor
             WriteRegInfo("textViewerWidth"   ,textViewerWidth    );
             WriteRegInfo("textViewerHeight"  ,textViewerHeight   );
             WriteRegInfo("textLength"  ,textLength   );
-
+            WriteRegInfo("lastAliasFile", lastAliasFile);
             return true;
         }
         
