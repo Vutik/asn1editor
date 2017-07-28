@@ -22,3 +22,5 @@ Denis Lubinski Changes
 * Alias for node by regexp
 * Many asn item in one file
 * Mayby edit not work :(. I use it only for view
+
+binary files in /app
